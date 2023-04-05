@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { Text, View } from "react-native";
 import { COLORS } from "../constants";
+import { Provider } from "../context/useContext";
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
@@ -20,12 +21,14 @@ export default function Layout() {
   }, [fontsLoaded]);
   if (!fontsLoaded) return null;
   return (
-    <Stack
-      onLayout={onLayoutRootView}
-      screenOptions={{
-        headerStyle: { backgroundColor: COLORS.darkNavy },
-        headerShadowVisible: false,
-      }}
-    />
+    <Provider>
+      <Stack
+        onLayout={onLayoutRootView}
+        screenOptions={{
+          headerStyle: { backgroundColor: COLORS.darkNavy },
+          headerShadowVisible: false,
+        }}
+      />
+    </Provider>
   );
 }

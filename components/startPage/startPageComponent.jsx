@@ -1,15 +1,9 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Button,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, SafeAreaView, TouchableOpacity } from "react-native";
 import { styles } from "./startPageComponent.style";
 import DropdownComponent from "../common/dropDown/dropdownComponent";
-import { useState, useEffect } from "react";
-import useFetch from "../../hook/useFetch";
-import axios from "axios";
+import { useState, useEffect, useContext } from "react";
+import { useRouter } from "expo-router";
+import { StateContext } from "../../context/useContext";
 
 const difficulty = [
   { label: "Any Difficulty", value: "1" },
@@ -19,11 +13,10 @@ const difficulty = [
 ];
 
 const StartPageComponent = () => {
+  const { categoryId, difficultyLevel, setCategoryId, setDifficultyLevel } =
+    useContext(StateContext);
+  const router = useRouter();
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState(null);
-  const [difficultyLevel, setDifficultyLevel] = useState(null);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
 
   //Get the Gategories
   useEffect(() => {
@@ -34,39 +27,6 @@ const StartPageComponent = () => {
     }
     getGategories();
   }, []);
-
-  //Get the Data
-  const fetchData = async (query) => {
-    const options = {
-      method: "GET",
-      url: `https://opentdb.com/api.php`,
-      params: { ...query },
-    };
-    try {
-      const response = await axios.request(options);
-      setData(response.data);
-    } catch (error) {
-      setError(error);
-      alert("There is an error");
-    }
-  };
-
-  const handlePress = () => {
-    if (difficultyLevel.toLowerCase() === "any difficulty") {
-      fetchData({
-        amount: 2,
-        category: categoryId,
-        type: "multiple",
-      });
-    } else {
-      fetchData({
-        amount: 2,
-        category: categoryId,
-        difficulty: difficultyLevel.toLowerCase(),
-        type: "multiple",
-      });
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -87,7 +47,10 @@ const StartPageComponent = () => {
       </View>
 
       <View style={styles.btnContainer}>
-        <TouchableOpacity style={styles.btn} onPress={handlePress}>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => router.push("/question")}
+        >
           <Text style={styles.btnText}>Start</Text>
         </TouchableOpacity>
       </View>

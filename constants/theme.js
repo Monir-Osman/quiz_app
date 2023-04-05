@@ -8,6 +8,9 @@ const COLORS = {
   lightNavy: "#19376D",
   primary: "#576CBC",
   secondary: "#A5D7E8",
+  white: "#ffffff",
+  black: "#000",
+  gold: "#ffd700",
 };
 
 const FONTS = {
