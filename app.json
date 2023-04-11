@@ -6,6 +6,14 @@
       "bundler": "metro"
     },
     "name": "Quiz_App",
-    "slug": "Quiz_App"
+    "slug": "Quiz_App",
+    "extra": {
+      "eas": {
+        "projectId": "817bc850-837b-49a1-be9c-9905eeaebccc"
+      }
+    },
+    "android": {
+      "package": "com.monirosmani.Quizzles"
+    }
   }
 }

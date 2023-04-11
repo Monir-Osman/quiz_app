@@ -15,7 +15,6 @@ function Home() {
     >
       <Stack.Screen
         options={{
-          headerRight: () => <ScreenHeaderBtn iconUrl={images.profile} />,
           headerTitle: "",
         }}
       />

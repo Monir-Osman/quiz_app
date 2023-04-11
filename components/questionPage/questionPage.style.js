@@ -19,26 +19,26 @@ export const styles = StyleSheet.create({
   },
   answersContainer: {
     position: "relative",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 10,
   },
-  btnAnswer: {
-    backgroundColor: COLORS.lightNavy,
+  btnAnswer: (answer, currentSelectedItem) => ({
+    backgroundColor:
+      answer === currentSelectedItem ? COLORS.primary : COLORS.lightNavy,
     paddingVertical: SIZES.small,
     marginTop: SIZES.large,
     borderRadius: SIZES.xxLarge,
-  },
+  }),
   btnAnswerText: {
     color: COLORS.white,
     fontFamily: FONTS.bold,
     textAlign: "center",
     fontSize: SIZES.large,
+    maxWidth: 240,
   },
   indexContainer: {
-    position: "absolute",
-    bottom: 0,
-    top: -4,
-    left: 7,
     backgroundColor: COLORS.secondary,
     width: 35,
     height: 35,
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
     fontSize: 20,
   },
   btnNextContainer: {
-    marginTop: SIZES.xxLarge * 2,
+    marginTop: SIZES.xxLarge,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
@@ -70,5 +70,52 @@ export const styles = StyleSheet.create({
     fontSize: SIZES.xLarge,
     fontFamily: FONTS.bold,
     color: COLORS.darkNavy,
+  },
+  imgCon: {
+    width: 40,
+    height: 40,
+  },
+  img: {
+    width: "100%",
+    height: "100%",
+  },
+  // Modal
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#00000099",
+  },
+  modalView: {
+    width: "80%",
+    backgroundColor: COLORS.darkNavy,
+    borderRadius: 20,
+    padding: 30,
+    alignItems: "center",
+  },
+  modalText: {
+    color: COLORS.gold,
+    fontFamily: FONTS.bold,
+    fontSize: SIZES.xxLarge,
+    marginBottom: 20,
+  },
+  modalScoreNum: {
+    color: COLORS.white,
+    fontFamily: FONTS.bold,
+    fontSize: SIZES.xxLarge,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: COLORS.gold,
+    width: "70%",
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 25,
+  },
+  textStyle: {
+    textAlign: "center",
+    fontFamily: FONTS.bold,
+    color: COLORS.black,
+    fontSize: SIZES.xLarge,
   },
 });

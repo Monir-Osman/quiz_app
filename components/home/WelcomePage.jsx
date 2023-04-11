@@ -1,6 +1,7 @@
 import { Link, useRouter } from "expo-router";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import { images } from "../../constants";
 import { styles } from "./welcomePage.style";
 
 function WelcomePage() {
@@ -8,10 +9,7 @@ function WelcomePage() {
   return (
     <View style={styles.container}>
       <View>
-        <Image
-          source={require("../../assets/images/quiz.png")}
-          resizeMode="contain"
-        />
+        <Image source={images.quiz} resizeMode="contain" />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.text}>Quizzles</Text>

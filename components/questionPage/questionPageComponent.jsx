@@ -5,12 +5,15 @@ import {
   TouchableWithoutFeedback,
   Pressable,
   ActivityIndicator,
+  Image,
+  Modal,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { styles } from "./questionPage.style";
 import { StateContext } from "../../context/useContext";
 import axios from "axios";
-import { COLORS } from "../../constants";
+import { COLORS, icons } from "../../constants";
+import { useRouter } from "expo-router";
 
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
 function shuffleArray(array) {
@@ -26,6 +29,13 @@ const QuestionPageComponent = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
+  const [currentSelectedItem, setCurrentSelectedItem] = useState(null);
+  const [correctAnswer, setCorrectAnswer] = useState(null);
+  const [disbleSelect, setDisableSelect] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [score, setScore] = useState(0);
+  const router = useRouter();
 
   const {
     categoryId,
@@ -40,7 +50,7 @@ const QuestionPageComponent = () => {
     setIsLoading(true);
     const options = {
       method: "GET",
-      url: `https://opentdb.com/api.php?amount=2&type=multiple&encode=url3986`,
+      url: `https://opentdb.com/api.php?amount=10&type=multiple&encode=url3986`,
       params: { ...query },
     };
     try {
@@ -52,6 +62,7 @@ const QuestionPageComponent = () => {
       ];
       shuffleArray(arr);
       setAnswers(arr);
+      setCorrectAnswer(response.data.results[currentQuestion]?.correct_answer);
 
       setIsLoading(false);
     } catch (error) {
@@ -80,19 +91,38 @@ const QuestionPageComponent = () => {
         difficulty: difficultyLevel.toLowerCase(),
       });
     }
+    setCurrentQuestion(() => 0);
   }, [categoryId, difficultyLevel]);
 
-  const handlePress = () => {
-    setIsAnswered(true);
-    setCurrentQuestion(currentQuestion + 1);
+  const handlePressNext = () => {
+    setIsAnswered(false);
+    setCurrentQuestion(() => currentQuestion + 1);
+    const arr = [
+      ...data[currentQuestion + 1]?.incorrect_answers,
+      data[currentQuestion + 1]?.correct_answer,
+    ];
+    shuffleArray(arr);
+    setAnswers(arr);
+    setCorrectAnswer(data[currentQuestion + 1]?.correct_answer);
+    setDisableSelect(false);
   };
 
   const handleSelect = (answer) => {
     if (answer === data[currentQuestion].correct_answer) {
-      console.log(true);
+      setIsAnswered(true);
+      setCurrentSelectedItem(answer);
+      setCorrectAnswer(answer);
+      setDisableSelect(true);
+      setScore(score + 10);
     } else {
-      console.log(false);
+      setIsAnswered(true);
+      setCurrentSelectedItem(answer);
+      setDisableSelect(true);
     }
+  };
+
+  const handleSeeResult = () => {
+    setModalVisible(true);
   };
 
   return (
@@ -103,18 +133,20 @@ const QuestionPageComponent = () => {
         <Text>Something went wrong</Text>
       ) : (
         <View>
-          <Text style={styles.headerText}>Question {currentQuestion + 1}</Text>
+          <Text style={styles.headerText}>
+            Question {currentQuestion + 1} / 10
+          </Text>
           <View>
             <Text style={styles.questionText}>
               {decodeURIComponent(data[currentQuestion]?.question)}
             </Text>
           </View>
           <View>
-            {answers.map((answer, index) => (
+            {answers?.map((answer, index) => (
               <TouchableOpacity
                 key={index}
-                style={styles.btnAnswer}
-                onPress={() => handleSelect(answer)}
+                style={styles.btnAnswer(answer, currentSelectedItem)}
+                onPress={() => (!disbleSelect ? handleSelect(answer) : null)}
               >
                 <View style={styles.answersContainer}>
                   <View style={styles.indexContainer}>
@@ -123,17 +155,66 @@ const QuestionPageComponent = () => {
                   <Text style={styles.btnAnswerText}>
                     {decodeURIComponent(answer)}
                   </Text>
+                  <View style={styles.imgCon}>
+                    {isAnswered ? (
+                      <Image
+                        source={
+                          answer === correctAnswer ? icons.right : icons.wrong
+                        }
+                        style={styles.img}
+                        resizeMode="contain"
+                      />
+                    ) : null}
+                  </View>
                 </View>
               </TouchableOpacity>
             ))}
           </View>
           <View style={styles.btnNextContainer}>
-            <Pressable style={styles.btnNext(isAnswered)} onPress={handlePress}>
-              <Text style={styles.btnNextText}>Next</Text>
-            </Pressable>
+            {currentQuestion > 8 ? (
+              <Pressable
+                style={styles.btnNext(isAnswered)}
+                onPress={() => setModalVisible(true)}
+              >
+                <Text style={styles.btnNextText}>See The Result</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.btnNext(isAnswered)}
+                onPress={isAnswered ? handlePressNext : null}
+              >
+                <Text style={styles.btnNextText}>Next</Text>
+              </Pressable>
+            )}
           </View>
         </View>
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Your Score!</Text>
+            <Text style={styles.modalScoreNum}>{score} / 100</Text>
+
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                router.back();
+              }}
+            >
+              <Text style={styles.textStyle}>Play Again</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
